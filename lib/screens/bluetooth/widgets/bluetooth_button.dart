@@ -50,7 +50,11 @@ class _BluetoothButtonState extends State<BluetoothButton> {
         elevation: 10.0,
         shape: CircleBorder(),
         backgroundColor: Theme.of(context).colorScheme.tertiary,
-        child: Icon(Icons.bluetooth_connected, size: 30, color: Theme.of(context).colorScheme.primary,),
+        child: Icon(
+          Icons.bluetooth_connected,
+          size: 30,
+          color: Theme.of(context).colorScheme.primary,
+        ),
       ),
     );
     // return FloatingActionButton(

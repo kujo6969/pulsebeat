@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:testing3/screens/bluetooth/widgets/bluetooth_button.dart';
-import 'package:testing3/screens/bluetooth/widgets/connection_status.dart';
+import 'package:testing3/screens/bluetooth/bluetooth_screen.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -22,11 +21,7 @@ class _HomePageState extends State<HomePage> {
         child: Center(
           child: Column(
             mainAxisAlignment: .center,
-            children: [
-              SizedBox(height: 150, width: 150, child: BluetoothButton()),
-              ConnectionStatus(),
-             
-            ],
+            children: [BluetoothScreen()],
           ),
         ),
       ),
