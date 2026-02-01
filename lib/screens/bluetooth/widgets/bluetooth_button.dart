@@ -1,8 +1,8 @@
-import 'dart:async';
-
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+
+import 'device_list_dialog.dart';
 
 class BluetoothButton extends StatefulWidget {
   const BluetoothButton({super.key});
@@ -12,56 +12,53 @@ class BluetoothButton extends StatefulWidget {
 }
 
 class _BluetoothButtonState extends State<BluetoothButton> {
-  BluetoothAdapterState _adapterState = BluetoothAdapterState.unknown;
-
-  late StreamSubscription<BluetoothAdapterState> _adapterStateStateSubscription;
-
-  @override
-  void initState() {
-    super.initState();
-    _adapterStateStateSubscription = FlutterBluePlus.adapterState.listen((
-      state,
-    ) {
-      _adapterState = state;
-      if (mounted) {
-        setState(() {});
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _adapterStateStateSubscription.cancel();
-    super.dispose();
-  }
+  bool _connecting = false;
 
   @override
   Widget build(BuildContext context) {
-    print(_adapterState);
-
     return AvatarGlow(
-      animate: true,
-      repeat: true,
-      glowColor: Theme.of(context).colorScheme.tertiary,
+      animate: !_connecting,
+      // glowColor: Theme.of(context).colorScheme.tertiary,
+      glowColor: Colors.white,
       glowShape: BoxShape.circle,
-      curve: Curves.fastOutSlowIn,
-      child: FloatingActionButton(
-        onPressed: () {},
-        elevation: 10.0,
-        shape: CircleBorder(),
-        backgroundColor: Theme.of(context).colorScheme.tertiary,
-        child: Icon(
-          Icons.bluetooth_connected,
-          size: 30,
-          color: Theme.of(context).colorScheme.primary,
+      child: SizedBox(
+        height: 150,
+        width: 150,
+        child: FloatingActionButton(
+          elevation: 10.0,
+          shape: const CircleBorder(),
+          backgroundColor: Colors.white70,
+          onPressed: _connecting ? null : _onBluetoothPressed,
+          child: Icon(
+            Icons.bluetooth,
+            size: 30,
+            color: Theme.of(context).colorScheme.secondary,
+
+          ),
         ),
       ),
     );
-    // return FloatingActionButton(
-    //   onPressed: () {},
-    //   elevation: 10.0,
-    //   shape: CircleBorder(),
-    //   child: Icon(Icons.bluetooth_connected, size: 30),
-    // );
+  }
+
+  Future<void> _onBluetoothPressed() async {
+    setState(() => _connecting = true);
+
+    final BluetoothDevice? device = await showDialog<BluetoothDevice>(
+      context: context,
+      builder: (_) => const DeviceListDialog(),
+    );
+
+    if (device != null) {
+      try {
+        await device.connect(license: License.free);
+        debugPrint('Connected to ${device.remoteId}');
+      } catch (e) {
+        debugPrint('Connection failed: $e');
+      }
+    }
+
+    if (mounted) {
+      setState(() => _connecting = false);
+    }
   }
 }
