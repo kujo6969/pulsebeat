@@ -16,8 +16,9 @@ class PulseMonitoringScreenState extends State<PulseMonitoringScreen> {
     return Consumer(
       builder: (context, ref, child) {
         final connected = ref.watch(isConnectedProvider);
+        final device = ref.watch(connectedDeviceProvider);
         return connected
-            ? HeartbeatMonitoringWidget()
+            ? HeartbeatMonitoringWidget(device: device!)
             : Center(
                 child: Text(
                   'Please connect to a device first.',

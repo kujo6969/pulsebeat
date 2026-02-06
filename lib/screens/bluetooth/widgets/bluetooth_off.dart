@@ -25,7 +25,6 @@ class BluetoothOff extends ConsumerWidget {
         ],
       ),
     );
-
     if (confirmed == true) {
       ref.read(bluetoothProvider.notifier).disconnected();
     }

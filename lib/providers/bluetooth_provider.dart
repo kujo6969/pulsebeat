@@ -2,13 +2,20 @@ import 'dart:async';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart' as fb;
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:testing3/services/firestore_service.dart';
 import '../models/ble_state.dart';
 
 part 'bluetooth_provider.g.dart';
 
 /// A global provider to track connection status
 final isConnectedProvider = StateProvider<bool>((ref) => false);
-final connectedTo = StateProvider<String>((ref)=> '');
+final connectedTo = StateProvider<String>((ref) => '');
+final connectedDeviceProvider = StateProvider<fb.BluetoothDevice?>(
+  (ref) => null,
+);
+final bpmService = BpmService();
+final bpmProvider = StateProvider<int>((ref) => 0);
+
 @riverpod
 class BluetoothNotifier extends _$BluetoothNotifier {
   StreamSubscription<List<fb.ScanResult>>? _scanSub;
@@ -44,6 +51,8 @@ class BluetoothNotifier extends _$BluetoothNotifier {
     );
     ref.read(isConnectedProvider.notifier).state = true;
     ref.read(connectedTo.notifier).state = deviceName;
+    final bpm = ref.watch(bpmProvider);
+    bpmService.addBpmReading(deviceId, bpm);
   }
 
   void disconnected() {
@@ -53,6 +62,7 @@ class BluetoothNotifier extends _$BluetoothNotifier {
     _dataSub?.cancel();
     ref.read(isConnectedProvider.notifier).state = false;
     ref.read(connectedTo.notifier).state = '';
+    ref.read(connectedDeviceProvider.notifier).state = null;
   }
 
   // Optional: expose isConnected getter for convenience
